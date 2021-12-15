@@ -1,0 +1,142 @@
+{% set tag_posts = blog_recent_posts('60013449275', 100) %}
+{% set post_listing = [] %}
+
+{% for item in module.grade %}
+
+{% set posts_array = [] %}
+
+{% for tag_post in tag_posts %}
+{% if tag_post.tag_list %}
+{% set post_array = [] %}
+{% for tag in tag_post.tag_list %}
+{% if tag.slug == item.tag1 %}
+{% do post_array.append( tag_post ) %}
+{% endif %}
+{% endfor %}
+{% if post_array|length > 0 %}
+{% do post_listing.append( { id: item.tag1, post: post_array[0], url: tag_post.absolute_url } ) %}
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+
+{#{% for post in post_listing %}
+{{post}}<br>
+{% endfor %}#}
+
+<section id="programs">
+	<div class="container">
+		<div class="title__tabs">
+			<h2>
+				{{ module.title }}
+			</h2>
+		</div>
+		<ul id="programs_filter">
+			<li><a href="#" id="programs_all">All Courses</a></li>
+			{% for item in module.filters %}
+			<li><a href="#" id="programs_{{ item.filter|lower|replace(' ','-') }}">{{ item.filter }}</a></li>
+			{% endfor %}
+		</ul>
+		<div class="filter__mobile">
+			<p>
+				Filter by
+			</p>
+			<div class="select">
+				<select id="programs_filter_mobile">
+					<option value="programs_all" id="programs_mobile_all">All Courses</option>
+					{% for item in module.filters %}
+					<option value="programs_{{ item.filter|lower|replace(' ','-') }}">{{ item.filter }}</option>
+					{% endfor %}
+				</select>
+			</div>
+		</div>
+	</div>
+	{% for item in module.grade %}
+	{% set program_id = "program_"~loop.index %}
+	<div id="program_{{ loop.index }}" class="container block__courses">
+		<div class="columns is-gapless  programs__content">
+			<div class="column is-4">
+				<div class="tab__content">
+					<div class="tab__content-image">
+						<img src="{{ item.icon.src }}" alt="{{ item.icon.alt }}">
+					</div>
+					<h3>
+						{{ item.title }}
+					</h3>
+					<div class="description__parent">
+						<div class="description readmore">
+							{{ item.description }}
+							<span class="readmore-link"></span>   
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="column is-8">
+				<div class="multiple-items">
+					{% for tag_post in post_listing %}
+					{% if tag_post.id == item.tag1 %}
+					{% set featured_tags = false %}
+					<div class="programs__cards 
+											{% if tag_post.post.tag_list %}
+											{% set program_tags = "" %}
+											{% for tag in tag_post.post.tag_list %}
+											{{ tag.slug }}
+											{% if module.featured_tags == tag.slug && featured_tags == false %}
+											{% set featured_tags = true %}
+											{% endif %}
+											{% endfor %}
+											{% endif %}
+											">
+						<div class="programs__card similar_blogs similar_blogs_view_feactured transition_no_shadow">
+							<!--post structure-->
+							<a href="{{ tag_post.url }}" data-sal="slide-up" data-sal-easing="ease-out-back">
+								<div class="card__items">
+									<div class="featured__image"  style="background-image: url('{{ tag_post.post.featured_image }}');">
+										{% if tag_post.post.tag_list %}
+										{% set program_tags = "" %}
+										{% for tag in tag_post.post.tag_list %}
+										{% if module.featured_tags == tag.slug %}
+										<div class="required__graduation">
+											<div class="required__graduation-icon">
+												<img src="https://fs.hubspotusercontent00.net/hubfs/8517951/mortarboard%20(1)%201.svg" alt="graduation icon">
+											</div>
+											<p>
+												required for graduation
+											</p>
+										</div>
+										{% endif %}
+										{% endfor %}
+										{% endif %}
+									</div>
+									<!--<div class="similar__blogs__title_and-cta courses__title">
+										<h2>
+											{{ tag_post.post.name }}
+										</h2>
+
+
+									</div>-->
+									<div class="similar__blogs__title_and-cta courses__title">
+											<h2  class="similar_blogs__wrapper__content__title_box dark">
+												{{ tag_post.post.name }}
+											</h2>
+											<div class="similar_blogs__content_readmore" style="min-height: 45px;">
+												<span class="read_more similar_blogs__read ">
+													SEE THE COURSE  <svg width="24" height="25" viewBox="0 0 24 25" fill="#fff" xmlns="http://www.w3.org/2000/svg">
+													<path d="M18.17 13.0833L15.59 15.6733L17 17.0833L22 12.0833L17 7.08325L15.59 8.49325L18.17 11.0833H2V13.0833H18.17Z"/>
+													</svg>
+												</span>
+											</div>
+										</div>
+								</div>
+							</a>
+							<!-- end post structure-->
+						</div>
+					</div>
+					{% endif %}
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+</section>
